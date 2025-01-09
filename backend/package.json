@@ -8,8 +8,8 @@
     "dev": "nodemon app.js",
     "docker-start": "docker compose up",
     "test": "jest",
-    "test:models": "jest src/tests/models",
-    "test:routes": "jest src/tests/routes"
+    "test:models": "jest backend/tests/models",
+    "test:routes": "jest backend/tests/routes"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
