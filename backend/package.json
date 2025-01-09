@@ -1,5 +1,5 @@
 {
-  "name": "task_manager_app",
+  "name": "task_manager_app_backend",
   "version": "1.0.0",
   "description": "A basic task manager application with intentional vulnerabilities for educational purposes",
   "main": "app.js",
