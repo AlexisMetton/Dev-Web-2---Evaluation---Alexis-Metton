@@ -1,0 +1,6 @@
+/node_modules/*
+/toBeRemoved/*
+*.DS_Store
+/.env
+/package-lock.json
+
