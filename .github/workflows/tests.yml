@@ -19,7 +19,7 @@ jobs:
             ref: ${{ github.sha }}
 
       - name: Install deps
-        working-directory: ./src
+        working-directory: ./backend
         run: |
           echo HOST=${{ secrets.HOST }}
           npm i
@@ -36,7 +36,7 @@ jobs:
 
       - name: Run model tests
         run: npm run test:models
-        working-directory: ./src
+        working-directory: ./backend
         env: 
           HOST: ${{ secrets.HOST }}
           DATABASE: ${{ secrets.DATABASE }}
@@ -49,7 +49,7 @@ jobs:
 
       - name: Run route tests
         run: npm run test:routes
-        working-directory: ./src
+        working-directory: ./backend
         env: 
           HOST: ${{ secrets.HOST }}
           DATABASE: ${{ secrets.DATABASE }}
