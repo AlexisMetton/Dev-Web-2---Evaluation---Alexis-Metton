@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import CustomInput from "@/components/customInput/CustomInput";
 import { useForm } from "react-hook-form";
+import { useAuth } from "@/security/authProvider/AuthProvider";
+import { useTheme } from "@/layouts/themeProvider/ThemeProvider";
 import API_URL from "@/utils/ConfiAPI";
 
 const Login = () => {
@@ -13,6 +15,8 @@ const Login = () => {
   } = useForm();
   const [serverError, setServerError] = useState(null);
   const navigate = useNavigate();
+  const { checkAuthStatus } = useAuth();
+  const { theme } = useTheme();
 
   const onSubmit = async (data) => {
     setServerError(null);
@@ -30,7 +34,10 @@ const Login = () => {
 
       if (response.ok) {
         localStorage.setItem("token", responseData.token);
-        navigate("/dashboard");
+        const isAuthenticated = await checkAuthStatus();
+        if (isAuthenticated) {
+          navigate("/dashboard");
+        }
       } else {
         setServerError(responseData.error || "Une erreur est survenue.");
       }
@@ -40,9 +47,17 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+    <div
+      className={`min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 ${
+        theme === "dark" ? "bg-black text-white" : "bg-gray-50 text-gray-900"
+      }`}
+    >
+      <div
+        className={`max-w-md w-full space-y-8 p-8 rounded-lg shadow-md ${
+          theme === "dark" ? "bg-black" : "bg-white"
+        }`}
+      >
+        <h2 className="mt-6 text-center text-3xl font-extrabold">
           Sign in to your account
         </h2>
 
@@ -62,7 +77,6 @@ const Login = () => {
           noValidate
         >
           <div className="rounded-md shadow-sm space-y-4">
-            {/* Custom Input for Username */}
             <CustomInput
               type="text"
               name="username"
@@ -77,7 +91,6 @@ const Login = () => {
               })}
             />
 
-            {/* Custom Input for Password */}
             <CustomInput
               type="password"
               name="password"
@@ -94,18 +107,24 @@ const Login = () => {
           </div>
 
           <div>
-            <Button id="button_submit" type="submit" className="w-full">
+            <Button
+              id="button_submit"
+              type="submit"
+              className="w-full"
+            >
               Sign in
             </Button>
           </div>
         </form>
 
-        <p className="mt-2 text-center text-sm text-gray-600">
+        <p className="mt-2 text-center text-sm text-gray-400">
           Don't have an account?{" "}
           <a
             id="link_register"
             href="/register"
-            className="font-medium text-black hover:underline"
+            className={`font-medium ${
+              theme === "dark" ? "text-white" : "text-black"
+            } hover:underline`}
           >
             Register here
           </a>

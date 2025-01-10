@@ -2,15 +2,20 @@ const jwt = require('jsonwebtoken');
 
 module.exports = {
     isAuthenticated: (req, res, next) => {
-        if (req.session && req.session.token) {
-            try {
-                const decoded = jwt.verify(req.session.token, process.env.JWT_SECRET);
-                req.user = decoded;
-                return next();
-            } catch (err) {
-                return res.status(401).send('Invalid or expired token.');
-            }
+        const authHeader = req.headers.authorization;
+
+        if (!authHeader) {
+            return res.status(401).json({ message: 'Accès non autorisé. Veuillez vous connecter.' });
         }
-        res.redirect('/login');
+
+        const token = authHeader.split(' ')[1];
+
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            req.user = decoded; // Injecte les données utilisateur dans `req.user`
+            return next();
+        } catch (err) {
+            return res.status(401).json({ message: 'Token invalide ou expiré. Veuillez vous reconnecter.' });
+        }
     },
 };

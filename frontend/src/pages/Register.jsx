@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import CustomInput from "@/components/customInput/CustomInput";
 import API_URL from "@/utils/ConfiAPI";
 import { useForm } from "react-hook-form";
+import { useAuth } from "@/security/authProvider/AuthProvider";
+import { useTheme } from "@/layouts/themeProvider/ThemeProvider";
 
 const Register = () => {
   const {
@@ -13,6 +15,8 @@ const Register = () => {
   } = useForm();
   const [serverError, setServerError] = useState(null);
   const navigate = useNavigate();
+  const { checkAuthStatus } = useAuth();
+  const { theme } = useTheme();
 
   const onSubmit = async (data) => {
     setServerError(null);
@@ -30,7 +34,10 @@ const Register = () => {
 
       if (response.ok) {
         localStorage.setItem("token", responseData.token);
-        navigate("/dashboard");
+        const isAuthenticated = await checkAuthStatus();
+        if (isAuthenticated) {
+          navigate("/dashboard");
+        }
       } else {
         setServerError(responseData.error || "Une erreur est survenue.");
       }
@@ -40,9 +47,21 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+    <div
+      className={`min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 ${
+        theme === "dark" ? "bg-black text-white" : "bg-gray-50"
+      }`}
+    >
+      <div
+        className={`max-w-md w-full space-y-8 ${
+          theme === "dark" ? "bg-black text-white" : "bg-white"
+        } p-8 rounded-lg shadow-md`}
+      >
+        <h2
+          className={`mt-6 text-center text-3xl font-extrabold ${
+            theme === "dark" ? "text-white" : "text-gray-900"
+          }`}
+        >
           Create an account
         </h2>
 
@@ -118,12 +137,18 @@ const Register = () => {
           </div>
         </form>
 
-        <p className="mt-2 text-center text-sm text-gray-600">
+        <p
+          className={`mt-2 text-center text-sm ${
+            theme === "dark" ? "text-gray-400" : "text-gray-600"
+          }`}
+        >
           Already have an account?{" "}
           <a
             id="link_login"
             href="/login"
-            className="font-medium text-black hover:underline"
+            className={`font-medium ${
+              theme === "dark" ? "text-white hover:underline" : "text-black hover:underline"
+            }`}
           >
             Sign in here
           </a>

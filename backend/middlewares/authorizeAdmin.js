@@ -1,21 +1,25 @@
 const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {
-    const token = req.session.token;
+    const authHeader = req.headers.authorization;
 
-    if (!token) {
+    if (!authHeader) {
         return res.status(401).json({ message: 'Accès non autorisé. Veuillez vous connecter.' });
     }
+
+    const token = authHeader.split(' ')[1];
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        // Vérifiez si l'utilisateur a le rôle d'administrateur
-        if (!decoded.roles || !decoded.roles.includes('ROLE_ADMIN')) {
-            return res.status(403).json({ message: 'Accès refusé. Droits administrateurs requis.' });
+        // Vérifie si l'utilisateur a au moins un des rôles requis
+        const hasRequiredRole = decoded.roles && requiredRoles.some((role) => decoded.roles.includes(role));
+
+        if (!hasRequiredRole) {
+            return res.status(403).json({ message: 'Accès refusé. Droits insuffisants.' });
         }
 
-        // Injecte les informations utilisateur dans `req.user` pour les contrôleurs
+        // Injecte les informations utilisateur dans `req.user`
         req.user = decoded;
         next();
     } catch (err) {
