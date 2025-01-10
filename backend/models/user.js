@@ -53,15 +53,32 @@ const User = {
         return id;
     },
 
-    update: async (id, roles) => {
-        const query = 'UPDATE users SET roles = ? WHERE id = ?';
-        const params = [roles.roles, id];
+    update: async (id, updatedFields) => {
+        const query = `
+            UPDATE users 
+            SET 
+                username = COALESCE(?, username),
+                email = COALESCE(?, email),
+                password = COALESCE(?, password),
+                roles = COALESCE(?, roles)
+            WHERE id = ?`;
+        
+        const params = [
+            updatedFields.username || null,
+            updatedFields.email || null,
+            updatedFields.password || null,
+            updatedFields.roles ? JSON.parse(updatedFields.roles) : null,
+            id,
+        ];
+    
         const [result] = await pool.execute(query, params);
+    
         if (result.affectedRows === 0) {
             throw new Error('User not found');
         }
-        return { id, ...roles };
-    },
+    
+        return { id, ...updatedFields };
+    },    
 };
 
 module.exports = User;

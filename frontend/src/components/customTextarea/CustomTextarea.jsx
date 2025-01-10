@@ -1,8 +1,8 @@
 import React from "react";
 import { useTheme } from "@/layouts/themeProvider/ThemeProvider";
 
-const CustomInput = React.forwardRef(
-  ({ type, name, label, errorMessage, ...rest }, ref) => {
+const CustomTextarea = React.forwardRef(
+  ({ name, label, errorMessage, rows = 3, ...rest }, ref) => {
     const { theme } = useTheme();
 
     return (
@@ -15,11 +15,11 @@ const CustomInput = React.forwardRef(
         >
           {label || name}
         </label>
-        <input
+        <textarea
           ref={ref}
-          type={type}
           id={name}
           name={name}
+          rows={rows}
           className={`border rounded-md px-3 py-2 text-sm ${
             errorMessage
               ? "border-red-500"
@@ -39,4 +39,4 @@ const CustomInput = React.forwardRef(
   }
 );
 
-export default CustomInput;
+export default CustomTextarea;

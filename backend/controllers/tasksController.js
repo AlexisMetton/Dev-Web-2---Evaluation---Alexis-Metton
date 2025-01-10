@@ -96,17 +96,5 @@ module.exports = {
             });
         }
     },
-
-    // updateTask: async (req, res) => {
-    //     const { id } = req.params;
-    //     const { title, description, completed } = req.body;
-        
-    //     try {
-    //         const task = await Task.update(id, { title, description, completed });
-    //         res.json({ success: true, task });
-    //     } catch (err) {
-    //         res.status(404).json({ success: false, error: err.message });
-    //     }
-    // },
     
 };
