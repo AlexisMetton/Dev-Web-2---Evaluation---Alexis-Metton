@@ -8,27 +8,28 @@ Bienvenue dans le projet **Task Manager Application** ! Ce document fournit tout
 
 ### 1.1 Présentation du projet
 
-Ce repositorty est un fork du projet suivant : [Voir le dépôt sur GitHub](https://github.com/Aherbeth/dumb_task_manager). Il s'agit d'un développement qui reccueillait énornmément de problèmes d'architecture, de sécurité, etc. Notre travail a été d'améliorer ce projet en ajoutant toutes les bonnes pratiques et fonctionnalités nécessaire afin de sécuriser et améliorer le code. vous pouvez consulter nos analyses du dépôt initial dans le dossier "Docs".
+Ce repositorty est un fork du projet suivant : [Voir le dépôt sur GitHub](https://github.com/AlexisMetton/dumb_task_manager_groupe_dg_am.git). Il s'agit d'un développement qui reccueillait énornmément de problèmes d'architecture, de sécurité, etc. Notre travail a été d'améliorer ce projet en ajoutant toutes les bonnes pratiques et fonctionnalités nécessaire afin de sécuriser et améliorer le code. vous pouvez consulter nos analyses du dépôt initial dans le dossier "Docs".
 
 Task Manager Application est une application web permettant :
 
 - Aux utilisateurs de gérer leurs tâches (ajouter, modifier, supprimer).
-- Aux administrateurs de gérer les utilisateurs (ajouter des rôles, supprimer des utilisateurs).
+- Aux administrateurs de gérer les utilisateurs (ajout, modification et suppression des utilisateurs et de leur tâche sous réserve des rôle attribuer à chaque utilisateur).
 
-L'architecture repose sur **Node.js**, **Express.js**, et **MySQL**, avec une gestion sécurisée des sessions et des tokens JWT pour l'authentification.
+L'architecture repose sur **Node.js**, **Express.js**, et **MySQL**, avec une gestion sécurisée des sessions et des tokens JWT pour l'authentification pour la backend.
+
+L'architecture repose sur **ReactJS**, **Tailwind**, et **ShadCN**, pour le frontend de l'application.
 
 ---
 
 ### 1.2 Stack Technique
 
 - **Backend** : Node.js, Express.js
-- **Template Engine** : EJS
-- **Frontend** : Tailwind
+- **Frontend** : ReactJS, Tailwind, ShadCN
 - **Base de données** : MySQL
 - **Tests** :  
   - Jest pour les tests unitaires et d'intégration
   - Cypress pour les tests E2E
-- **Authentification** : Sessions (Express-session) et Tokens JWT
+- **Authentification** : Tokens JWT
 - **CI/CD** : GitHub Actions
 
 ---
@@ -38,37 +39,9 @@ L'architecture repose sur **Node.js**, **Express.js**, et **MySQL**, avec une ge
 ### 2.1 Structure des Dossiers
 
 ``` bash
-src/
-├── app.js # Point d'entrée de l'application
-├── config/
-│ └── db.js # Configuration de la base de données
-├── controllers/
-│ ├── adminController.js # Gestion des fonctionnalités admin
-│ ├── authController.js # Authentification
-│ └── tasksController.js # Gestion des tâches
-├── middlewares/
-│ ├── authenticate.js # Vérification JWT
-│ └── authorizeAdmin.js # Contrôle accès admin
-├── views/
-│ ├── layouts/
-│ │ └── header.ejs # Template principal
-│ ├── auth/
-│ │ └── register.ejs # Page d'inscription
-│ └── task/
-│ └── tasks.ejs # Vue des tâches
-├── tests/
-│ ├── models/
-│ │ ├── tasks.test.js
-│ │ └── user.test.js
-│ └── routes/
-│ ├── adminController.test.js
-│ ├── authController.test.js
-│ └── tasksController.test.js
-└── cypress/
-├── e2e/
-│ └── task.cy.js # Tests E2E
-└── support/
-└── commands.js # Commandes Cypress
+.github/workflows/
+backend/
+frontend/
 ```
 
 ---
@@ -81,6 +54,7 @@ src/
   - POST `/auth/register` : Inscription
   - POST `/auth/login` : Connexion
   - GET `/auth/logout` : Déconnexion
+  - GET `/auth-status` : Vérifier la connexion
 
 - **Tâches** :
   - GET `/tasks` : Liste des tâches
@@ -89,30 +63,54 @@ src/
   - DELETE `/tasks/:id` : Suppression d'une tâche
 
 - **Administration** :
-  - GET `/admin/users` : Gestion des utilisateurs
-  - GET `/admin/tasks` : Supervision des tâches
+  - GET `/admin` : Liste des utilisateurs
+  - POST `/admin/user` : Création d'un utilisateur
+  - PUT `/admin/user/:id` : Modification d'un utilisateur
+  - DELETE `/admin/user/:id` : Suppression d'un utilisateur
+
+  - GET `/admin/tasks` : Liste des tâches
+  - POST `/admin/tasks` : Création d'une tâche
+  - PUT `/admin/tasks/:id` : Modification d'une tâche
+  - DELETE `/admin/tasks/:id` : Suppression d'une tâche
 
 ## 3. Configuration
 
 ### 3.1 Variables d'Environnement
 
 ``` bash
-# Serveur
 PORT=3001
-HOST=localhost
-# Base de données
-DATABASE=task_manager_demo
-USER=root
-PASSWORD=root
-DB_PORT=3306
-#Sécurité
+
 JWT_SECRET=phrase_secret
+
 SECRET=secret_taskmanager
-#Configuration des tests
+
+HOST=localhost
+
+USER=root
+
+PASSWORD=root
+
+DATABASE=task_manager_demo
+
+DB_PORT=3306
+# Si vous modifiez ce port alors modifer dans le fichier ".github/workflow/testEndToEnd.yaml" le port exposé par mysqk (le premier port).
+
 CREATE_USER=user
-CREATE_PASSWORD=UserPasswword8@
+
+CREATE_PASSWORD=UserPasswword8@ 
+# Obligation de mettre un mot de passe fort avec au moins 8 caractères, un chiffre, un caractère spécial, une majuscule et une minuscule
+
 CREATE_EMAIL=demoUser@demo.com
-CREATE_ROLE=['ROLE_USER']
+
+CREATE_ROLE=["ROLE_USER", "ROLE_ADMIN", "ROLE_SUPERADMIN"]
+
+INCORRECT_PASSWORD=WrongPassword8@ 
+# Obligation de mettre un mot de passe fort avec au moins 8 caractères, un chiffre, un caractère spécial, une majuscule et une minuscule
+
+INCORRECT_USER=test_wronguserdemo 
+# Il est important de garder le "test_" avant l'utilisateur pour que le script de cleanup de la base de données supprime bien les ajouts de tests
+
+INCORRECT_EMAIL=wrongemaildemo@wrongemail.com
 
 ```
 
@@ -129,7 +127,6 @@ CREATE_ROLE=['ROLE_USER']
 
 - Système basé sur JWT
 - Middleware `authenticate.js` pour la protection des routes
-- Gestion des sessions avec tokens
 - Validation des données utilisateur
 
 ### 4.2 Gestion des Tâches
@@ -138,6 +135,7 @@ CREATE_ROLE=['ROLE_USER']
 - Filtrage et tri
 - Attribution aux utilisateurs
 - Statuts de tâches
+- Gestion d'un thème `light` et `dark` sur tout le site
 
 ### 4.3 Administration
 
@@ -145,27 +143,35 @@ CREATE_ROLE=['ROLE_USER']
 - Supervision des tâches
 - Rapports et statistiques
 - Contrôle d'accès via `authorizeAdmin.js`
+- Contrôle d'autorisation via `permissions.js`
 
 ## 5. Tests
-
-### 5.1 Tests Unitaires (Jest)
+### 5.1 Tests Backend
+#### 5.1.1 Tests Unitaires (Jest)
 
 - Tests des modèles :
   - `user.test.js` : Validation des données utilisateur
   - `tasks.test.js` : Validation des tâches
 
-### 5.2 Tests d'Intégration
+#### 5.1.2 Tests d'Intégration
 
 - Tests des contrôleurs :
   - `authController.test.js`
   - `tasksController.test.js`
   - `adminController.test.js`
 
-### 5.3 Tests E2E (Cypress)
+### 5.2 Tests Frontend
+#### 5.2.1 Tests E2E (Cypress)
 
-- Scénarios dans `task.cy.js`
-- Tests des flux utilisateur complets
+- Scénarios dans `login.cy.js` et `register.cy.js`
+- Tests de la connexion et inscription
 - Validation des interfaces
+
+#### 5.2.2 Tests unitaires (Jest)
+
+- Tests des components de formulaire :
+  - `TaskForm.test.js` : Validation du formulaire d'ajout de task
+  - `UserForm.test.js` : Validation du formulaire d'ajout d'utilisateur
 
 ## 6. Sécurité
 
@@ -177,7 +183,7 @@ CREATE_ROLE=['ROLE_USER']
 
 ### 6.2 Autorisation
 
-- Système de rôles (User/Admin)
+- Système de rôles (User/Admin/Superadmin)
 - Middleware de vérification des droits
 - Isolation des données par utilisateur
 
@@ -200,15 +206,19 @@ CREATE_ROLE=['ROLE_USER']
 1. Clonez ce dépôt :
 
 ```bash
-git clone https://github.com/AlexisMetton/dumb_task_manager_groupe_dg_am.git
-cd dumb_task_manager_groupe_dg_am
+git clone https://github.com/AlexisMetton/Dev-Web-2---Evaluation---Alexis-Metton.git
+cd Dev-Web-2---Evaluation---Alexis-Metton
 ```
 
-1. Cloner le repository `git clone https://github.com/AlexisMetton/dumb_task_manager_groupe_dg_am.git && cd dumb_task_manager_groupe_dg_am`
-2. Copier `.env.example` vers `.env`
-3. Configurer les variables d'environnement
-4. Installer les dépendances : `npm install`
-5. Démarrer l'application : `npm start`
+1. Cloner le repository
+2. Aller dans le dossier `backend`
+3. Copier `.env.example` vers `.env`
+4. Configurer les variables d'environnement
+5. Installer les dépendances : `npm install`
+6. Démarrer le backend : `npm start`
+7. Aller dans le dossier frontend
+8. Installer les dépendances : `npm install`
+9. Démarrer le frontend : `npm run dev`
 
 ---
 
@@ -227,15 +237,9 @@ La base de données et les tables sont créées automatiquement au lancement du 
 
 - **Middleware `authenticate.js`** : Avant d'accéder à une page utilisateur on vérifie si l'utilisateur est bien connecté.
 - **Middleware `authorizeAdmin.js`** : Avant d'accéder à l'administration, on vérifie si l'utilisateur a bien le rôle `ROLE_ADMIN`.
+- **Middleware `permissions.js`** : Permet de vérifier que les modificationd des données utilisateurs admin et superadmin peuvent être réalisé seulement par un `ROLE_SUPERADMIN`.
 
 ### Sécurité
-
-Les sessions sont configurées avec les paramètres suivants :
-
-- **httpOnly** : Empêche les scripts d'accéder au cookie.
-- **samesite : strict** : Protège contre les attaquess CSRF.
-- **maxAge** : Expiration après 2 heures.
-- **secure: false** : Il faudra le mettre sur `true` si vous décidez de mettre en ligne le projet. Cela permettra que le cookie soit transmis seulement sur des connexions sécurisées (HTTPS). Puisque nous travaillons en local nous pouvons le laiser à `false`.
 
 Les tokens JWT sont signés avec une clé secrète (`JWT_SECRET`) présent dans le fichier `.env`. Il a aussi une durée avant expiration de 2 heures.
 
@@ -263,14 +267,26 @@ npm test:models // Permet de lancer tous les tests sur le code des modèles
 
 ---
 
-## 7.5 CI/CD avec GitHub Actions Backend
+## 7.4 **Comment lancer des tests frontend**
+
+```bash
+npm test // Permet de lancer tous les tests unitaire de jest
+```
+
+```bash
+npm run test:e2e // Permet de lancer les tests end to end avec Cypress
+```
+
+---
+
+## 7.6 CI/CD avec GitHub Actions Backend
 
 ### Workflow 1 : Tests des Modèles et Routes
 
 Ce workflow exécute les tests unitaires et fonctionnels des modèles et des routes. Il est déclenché lors de chaque push, ou pull request sur `develop` et `main.`
 Vous pouvez trouver les paramètres de ce workflow dans le dossier `.github/workflows/tests.yml`
 
-## 7.6 CI/CD avec GitHub Actions Frontend
+## 7.7 CI/CD avec GitHub Actions Frontend
 
 ### Workflow 1 : Tests unitaires
 

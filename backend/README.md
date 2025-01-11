@@ -10,8 +10,8 @@
 1. Clonez ce dépôt :
 
 ```bash
-git clone https://github.com/AlexisMetton/dumb_task_manager_groupe_dg_am.git
-cd dumb_task_manager_groupe_dg_am
+git clone https://github.com/AlexisMetton/Dev-Web-2---Evaluation---Alexis-Metton.git
+cd Dev-Web-2---Evaluation---Alexis-Metton
 ```
 
 1. Cloner le repository
@@ -99,7 +99,6 @@ INCORRECT_EMAIL=wrongemaildemo@wrongemail.com
 
 - Système basé sur JWT
 - Middleware `authenticate.js` pour la protection des routes
-- Gestion des sessions avec tokens
 - Validation des données utilisateur
 
 ### 4.2 Gestion des Tâches
@@ -113,8 +112,8 @@ INCORRECT_EMAIL=wrongemaildemo@wrongemail.com
 
 - Gestion des utilisateurs
 - Supervision des tâches
-- Rapports et statistiques
 - Contrôle d'accès via `authorizeAdmin.js`
+- Contrôle des actions selon le rôle (afin d'éviter la modification des utilisateurs admin par d'autres admin qui ne sont pas superadmin)
 
 ## 5. Tests
 
@@ -157,6 +156,7 @@ INCORRECT_EMAIL=wrongemaildemo@wrongemail.com
 
 - **Middleware `authenticate.js`** : Avant d'accéder à une page utilisateur on vérifie si l'utilisateur est bien connecté.
 - **Middleware `authorizeAdmin.js`** : Avant d'accéder à l'administration, on vérifie si l'utilisateur a bien le rôle `ROLE_ADMIN` ou `ROLE_SUPERADMIN`.
+- **Middleware `permissions.js`** : Permet de vérifier que les modificationd des données utilisateurs admin et superadmin peuvent être réalisé seulement par un `ROLE_SUPERADMIN`.
 
 ### Tests des modèles et routes
 
