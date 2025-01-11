@@ -56,6 +56,7 @@ const Dashboard = () => {
         },
       });
       const data = await response.json();
+      // Obligé de faire le tri directement ici car si j'appelle sortTasks alors ce n'est plus dynamique
       if (data.success) {
         let sortedTasks = [...data.tasks];
         if (sortOption === "date-asc") {

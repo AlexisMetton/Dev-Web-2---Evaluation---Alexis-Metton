@@ -20,7 +20,9 @@ J'ai dû modifier mon backend afin qu'il corresponde et réponde à mes  besoins
 
 Concernant les ajouts, j'ai dû ajouter des routes en admin afin d'assurer la totalité des actions. Sachant qu'il y avait aussi des restrictions selon le grade de l'administrateur j'ai ajouter une vérification de permissions dans `permissions.js` afin déviter qu'un ROLE_ADMIN puisse attribuer ou modifier des ROLE_ADMIN en tapant directement une URL de l'API. J'ai aussi dû ajouter quelques requêtes à la base de données pour satisfaire toutes les fonctionnalités de l'application.
 
-Enfin, j'ai adapté l'ensemble de mes tests unitaires et fonctionnels afin qu'ils correspondent aux changements que j'ai effectués.
+J'ai adapté l'ensemble de mes tests unitaires et fonctionnels afin qu'ils correspondent aux changements que j'ai effectués.
+
+Enfin, j'ai adapté en conséquence le fichier `README.md` dans mon dossier `backend`.
 
 Voici les changements majeurs sur mon backend.
 
@@ -38,6 +40,10 @@ L'ensemble des fonctionnalités des tâches et de l'administration ont été ré
 
 Concernant les tests, par manque de temps je suis allé à l'essentiel. J'ai d'abord réalisé des tests unitaires avec Jest sur mes deux composants de formulaire (`UserForm` et `TaskForm`). Puis, j'ai réalisé des tests end to end avec Cypress sur l'inscription et la connexion.
 
-Pour terminer, j'ai mis en place les GitHub actions pour que ces tests frontend et backend s'effectue à chaque changement sur ma branche `develop` et `main`.
+Pour terminer, j'ai mis en place les GitHub actions pour que ces tests frontend et backend s'effectue à chaque changement sur ma branche `develop` et `main` et j'ai adapté en conséquence le fichier `README.md` dans mon dossier `frontend`.
 
 Il s'agit d'une description non exhaustive de mon frontend mais ça permet de voir les grands axes des fonctionnalités, même s'il y en a d'autres qui ont été faites.
+
+## Partie commune
+
+J'ai écrit un README reprenant un maximum d'éléments sur mon frontend et backend afin d'apporter un maximum d'informations et de détails aux utilisateurs.

@@ -8,7 +8,7 @@ Bienvenue dans le projet **Task Manager Application** ! Ce document fournit tout
 
 ### 1.1 Présentation du projet
 
-Ce repositorty est un fork du projet suivant : [Voir le dépôt sur GitHub](https://github.com/AlexisMetton/dumb_task_manager_groupe_dg_am.git). Il s'agit d'un développement qui reccueillait énornmément de problèmes d'architecture, de sécurité, etc. Notre travail a été d'améliorer ce projet en ajoutant toutes les bonnes pratiques et fonctionnalités nécessaire afin de sécuriser et améliorer le code. vous pouvez consulter nos analyses du dépôt initial dans le dossier "Docs".
+Ce repositorty est un fork du projet suivant : [Voir le dépôt sur GitHub](https://github.com/AlexisMetton/dumb_task_manager_groupe_dg_am.git). Il s'agit d'une reprise pour transformer ce projet en API Rest afin de développer à côté une partie frontend avec ReactJS.
 
 Task Manager Application est une application web permettant :
 

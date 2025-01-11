@@ -20,13 +20,10 @@ const initializeDatabase = async () => {
 
         const connection = await pool.getConnection();
 
-        // Create database if not exists
         await connection.query(`CREATE DATABASE IF NOT EXISTS ${database}`);
 
-        // Switch to the database
         await connection.query(`USE ${database}`);
 
-        // Create users table
         await connection.query(`
             CREATE TABLE IF NOT EXISTS users (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -38,7 +35,6 @@ const initializeDatabase = async () => {
             );
         `);
 
-        // Create tasks table
         await connection.query(`
             CREATE TABLE IF NOT EXISTS tasks (
                 id INT AUTO_INCREMENT PRIMARY KEY,
