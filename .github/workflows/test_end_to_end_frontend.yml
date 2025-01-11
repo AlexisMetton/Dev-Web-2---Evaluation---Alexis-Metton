@@ -68,7 +68,8 @@ jobs:
 
       - name: Start Frontend Server
         working-directory: ./frontend
-        run: nohup npm run dev
+        run: |
+          nohup npm run dev -- --host 0.0.0.0 &
 
       - name: Wait for Frontend Server
         run: |
