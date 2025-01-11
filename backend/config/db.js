@@ -61,7 +61,7 @@ const initializeDatabase = async () => {
             INSERT IGNORE INTO users (username, password, email, roles) 
             VALUES (?, ?, ?, ?);
             `,
-            [user, hashedPassword, email, JSON.stringify(role)]
+            [user, hashedPassword, email, role]
         );
 
         console.log('Database and tables ensured to exist.');

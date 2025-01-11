@@ -49,7 +49,7 @@ const Header = () => {
                 >
                   Dashboard
                 </Link>
-                {user?.roles.includes("ROLE_ADMIN") || user?.roles.includes("ROLE_SUPERADMIN") && (
+                {(user?.roles.includes("ROLE_ADMIN") || user?.roles.includes("ROLE_SUPERADMIN")) && (
                   <Link
                     to="/admin/dashboard"
                     className={`block px-4 py-2 hover:underline ${

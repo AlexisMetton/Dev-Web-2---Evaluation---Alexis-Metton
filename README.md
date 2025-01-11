@@ -247,7 +247,7 @@ Les tests couvrent toutes les fonctionnalités des :
 - **Contrôleurs** : Validation des fonctionnalités et de la logique métier.
 - **Middlewares** : Test pout la validation d'accès à des ressources protégées.
 
-## 7.4 **Comment lancer des tests**
+## 7.4 **Comment lancer des tests backend**
 
 ```bash
 npm test // Permet de lancer tous les tests
@@ -259,34 +259,28 @@ npm test:routes // Permet de lancer les tests sur le code des controllers
 
 ```bash
 npm test:models // Permet de lancer tous les tests sur le code des modèles
-``
---- 
-
-### Tests End to End
-On exécute Cypress afin de couvrir les fonctionnalités des : 
-- **Index** : Vérification des links présent sur la page.
-- **Login** : Vérification des links et du formulaire de login.
-- **Register** : Vérification des links et du formulaire d'inscription.
-- **Tasks** : Vérification de l'existance des tâches, de leur ajout et de leur suppression.
-
-**Comment lancer des tests**
-```bash
-npm run test:e2e
 ```
 
 ---
 
-## 7.5 CI/CD avec GitHub Actions
+## 7.5 CI/CD avec GitHub Actions Backend
 
 ### Workflow 1 : Tests des Modèles et Routes
 
 Ce workflow exécute les tests unitaires et fonctionnels des modèles et des routes. Il est déclenché lors de chaque push, ou pull request sur `develop` et `main.`
 Vous pouvez trouver les paramètres de ce workflow dans le dossier `.github/workflows/tests.yml`
 
-### Workflow 2 : Tests End-to-End (E2E)
+## 7.6 CI/CD avec GitHub Actions Frontend
 
-Ce workflow exécute des tests avec Cypress sur les pages `index.js`, `login.js`, `register.js` et `tasks.js`. Il est déclenché lors de chaque push, ou pull request sur `develop` et `main.`
-Vous pouvez trouver les paramètres de ce workflow dans le dossier `.github/workflows/testsEndToEnd.yml`
+### Workflow 1 : Tests unitaires
+
+Ce workflow exécute les tests unitaires du frontend. Il est déclenché lors de chaque push, ou pull request sur `develop` et `main.`
+Vous pouvez trouver les paramètres de ce workflow dans le dossier `.github/workflows/test_frontend.yml`
+
+### Workflow 2 : Tests End to End
+
+Ce workflow exécute les tests end-to-end (E2E) avec Cypress pour vérifier le bon fonctionnement global de l'application. Il est déclenché lors de chaque push, ou pull request sur `develop` et `main.`
+Vous pouvez trouver les paramètres de ce workflow dans le dossier `.github/workflows/test_end_to_end_frontend.yml`
 
 ---
 
@@ -306,8 +300,6 @@ git checkout -b feature/nom-fonctionnalite
 git commit -m "Ajout de ma fonctionnalité"
 git push origin feature/nom-fonctionnalite
 ```
-
-### 4. Créer un Pull Request sur GitHub
 
 ---
 
