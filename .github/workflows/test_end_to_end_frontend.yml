@@ -66,9 +66,18 @@ jobs:
           done
           echo "Server is ready!"
 
-      - name: Start Server
+      - name: Start Frontend Server
         working-directory: ./frontend
-        run: npm run dev
+        run: nohup npm run dev
+
+      - name: Wait for Frontend Server
+        run: |
+          echo "Waiting for frontend server to start..."
+          until curl -s http://localhost:5173 > /dev/null; do
+            echo "Frontend server is not ready yet. Retrying..."
+            sleep 5
+          done
+          echo "Frontend server is ready!"
 
       - name: Run Cypress tests
         run: npm run test:e2e
