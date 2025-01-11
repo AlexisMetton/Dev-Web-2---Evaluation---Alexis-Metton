@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import CustomInput from "@/components/customInput/CustomInput";
 import { Button } from "@/components/ui/button";
 
-const UserForm = ({ defaultValues, onSubmit, theme }) => {
+const UserForm = ({ defaultValues, onSubmit, theme, currentUserRoles }) => {
   const {
     register,
     handleSubmit,
@@ -18,7 +18,6 @@ const UserForm = ({ defaultValues, onSubmit, theme }) => {
   const isEditMode = Boolean(defaultValues?.id);
 
   const handleFormSubmit = async (data) => {
-
     if (typeof data.roles === "string") {
       try {
         data.roles = JSON.parse(data.roles);
@@ -32,6 +31,11 @@ const UserForm = ({ defaultValues, onSubmit, theme }) => {
     await onSubmit(data);
     reset();
   };
+
+  const isSuperAdmin = currentUserRoles.includes("ROLE_SUPERADMIN");
+  const availableRoles = isSuperAdmin
+    ? ["ROLE_USER", "ROLE_ADMIN", "ROLE_SUPERADMIN"]
+    : ["ROLE_USER"];
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
@@ -64,12 +68,12 @@ const UserForm = ({ defaultValues, onSubmit, theme }) => {
       <CustomInput
         type="password"
         name="password"
-        label={isEditMode ? "Nouveau mot de passe (facultatif)" : "Mot de passe"}
+        label={
+          isEditMode ? "Nouveau mot de passe (facultatif)" : "Mot de passe"
+        }
         errorMessage={errors.password?.message}
         {...register("password", {
-          required: !isEditMode
-            ? "Le mot de passe est obligatoire"
-            : false, // Non requis en mode modification
+          required: !isEditMode ? "Le mot de passe est obligatoire" : false,
           minLength: {
             value: 8,
             message: "Le mot de passe doit contenir au moins 8 caractères",
@@ -104,9 +108,11 @@ const UserForm = ({ defaultValues, onSubmit, theme }) => {
             required: "Veuillez sélectionner au moins un rôle",
           })}
         >
-          <option value="ROLE_USER">Utilisateur</option>
-          <option value="ROLE_ADMIN">Administrateur</option>
-          <option value="ROLE_SUPERADMIN">Super Administrateur</option>
+          {availableRoles.map((role) => (
+            <option key={role} value={role}>
+              {role.replace("ROLE_", "")}
+            </option>
+          ))}{" "}
         </select>
         {errors.roles && (
           <p className="text-sm text-red-500 mt-1">{errors.roles.message}</p>

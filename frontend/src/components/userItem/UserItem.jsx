@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 
-const UserItem = ({ user, theme, onEdit, onDelete }) => {
+const UserItem = ({ user, theme, onEdit, onDelete, onTasks }) => {
   return (
     <div
       className={`p-4 rounded-lg border h-fit ${
@@ -31,6 +31,12 @@ const UserItem = ({ user, theme, onEdit, onDelete }) => {
         {Array.isArray(user.roles) ? user.roles.join(", ") : user.roles}
       </p>
       <div className="flex justify-center space-x-2 mt-4">
+        <Button
+          onClick={() => onTasks(user)}
+          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+        >
+          Tasks
+        </Button>
         <Button
           onClick={onEdit}
           className={`px-3 py-2 ${

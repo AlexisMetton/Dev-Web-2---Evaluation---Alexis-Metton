@@ -16,9 +16,6 @@ const TaskForm = ({ defaultValues, onSubmit, theme }) => {
   const handleFormSubmit = async (data) => {
     await onSubmit(data);
     reset();
-    if (onSuccess) {
-      onSuccess();
-    }
   };
 
   return (

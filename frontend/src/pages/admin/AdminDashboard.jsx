@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { useTheme } from "@/layouts/themeProvider/ThemeProvider";
 import API_URL from "@/utils/ConfiAPI";
 import Modal from "@/components/modal/Modal";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
-import TaskForm from "@/components/taskForm/TaskForm";
 import UserForm from "@/components/userForm/UserForm";
 import UserItem from "@/components/userItem/UserItem";
+import { useAuth } from "@/security/authProvider/AuthProvider";
+import TaskManagerModal from "@/components/taskManagerModal/TaskManagerModal";
 
 const AdminDashboard = () => {
   const { theme } = useTheme();
+  const { user } = useAuth();
   const [users, setUsers] = useState([]);
+  const [currentUserRoles, setCurrentUserRoles] = useState([]);
   const [newUser, setNewUser] = useState({
     username: "",
     email: "",
@@ -22,6 +24,8 @@ const AdminDashboard = () => {
   const [showModal, setShowModal] = useState(false);
   const [userToEdit, setUserToEdit] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showTaskModal, setShowTaskModal] = useState(false);
+  const [taskUser, setTaskUser] = useState(null);
 
   useEffect(() => {
     fetchUsers();
@@ -38,6 +42,14 @@ const AdminDashboard = () => {
       const data = await response.json();
       if (data.success) {
         setUsers(data.users);
+
+        const currentUser = data.users.find((u) => u.id === user?.id);
+        if (currentUser?.roles) {
+          const roles = Array.isArray(currentUser.roles)
+            ? currentUser.roles
+            : JSON.parse(currentUser.roles);
+          setCurrentUserRoles(roles);
+        }
       } else {
         setError(data.error);
       }
@@ -60,9 +72,16 @@ const AdminDashboard = () => {
       const responseData = await response.json();
       if (response.ok) {
         fetchUsers();
-        setNewUser({ username: "", email: "", password: "", roles: "ROLE_USER" });
+        setNewUser({
+          username: "",
+          email: "",
+          password: "",
+          roles: "ROLE_USER",
+        });
       } else {
-        setError(responseData.error || "Erreur lors de l'ajout de l'utilisateur.");
+        setError(
+          responseData.error || "Erreur lors de l'ajout de l'utilisateur."
+        );
       }
     } catch (err) {
       setError("Erreur lors de l'ajout de l'utilisateur.");
@@ -71,27 +90,31 @@ const AdminDashboard = () => {
 
   const handleEditUser = async (data) => {
     try {
-        const token = localStorage.getItem("token");
-        const response = await fetch(`${API_URL}/admin/user/${userToEdit.id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(data),
-        });
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_URL}/admin/user/${userToEdit.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
 
-        if (response.ok) {
-            fetchUsers();
-            closeEditModal();
+      if (response.ok) {
+        if (userToEdit.id === user.id) {
+          window.location.reload();
         } else {
-            const responseData = await response.json();
-            setError(responseData.error || "Erreur lors de la mise à jour.");
+          fetchUsers();
+          closeEditModal();
         }
+      } else {
+        const responseData = await response.json();
+        setError(responseData.error || "Erreur lors de la mise à jour.");
+      }
     } catch (err) {
-        setError("Erreur lors de la mise à jour de l'utilisateur.");
+      setError("Erreur lors de la mise à jour de l'utilisateur.");
     }
-};
+  };
 
   const handleDeleteUser = async () => {
     if (!userToDelete) return;
@@ -104,7 +127,9 @@ const AdminDashboard = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userToDelete.id));
+      setUsers((prevUsers) =>
+        prevUsers.filter((user) => user.id !== userToDelete.id)
+      );
       setShowModal(false);
       setUserToDelete(null);
     } catch (err) {
@@ -133,6 +158,16 @@ const AdminDashboard = () => {
     setUserToEdit(null);
   };
 
+  const openTaskModal = (user) => {
+    setTaskUser(user);
+    setShowTaskModal(true);
+  };
+
+  const closeTaskModal = () => {
+    setTaskUser(null);
+    setShowTaskModal(false);
+  };
+
   return (
     <>
       <h1 className="text-2xl font-bold mt-6 mb-6">Gestion des Utilisateurs</h1>
@@ -148,17 +183,18 @@ const AdminDashboard = () => {
           columnsCountBreakPoints={{ 750: 1, 751: 2 }}
           className="lg:w-2/3"
         >
-            <Masonry gutter="16px">
-    {users.map((user) => (
-      <UserItem
-        key={user.id}
-        user={user}
-        theme={theme}
-        onEdit={() => openEditModal(user)}
-        onDelete={() => openModal(user)}
-      />
-    ))}
-  </Masonry>
+          <Masonry gutter="16px">
+            {users.map((user) => (
+              <UserItem
+                key={user.id}
+                user={user}
+                theme={theme}
+                onEdit={() => openEditModal(user)}
+                onDelete={() => openModal(user)}
+                onTasks={openTaskModal}
+              />
+            ))}
+          </Masonry>
         </ResponsiveMasonry>
 
         <div
@@ -171,6 +207,7 @@ const AdminDashboard = () => {
             defaultValues={newUser}
             onSubmit={handleAddUser}
             theme={theme}
+            currentUserRoles={currentUserRoles}
           />
         </div>
       </div>
@@ -188,7 +225,10 @@ const AdminDashboard = () => {
           },
         ]}
       >
-        <p>Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.</p>
+        <p>
+          Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est
+          irréversible.
+        </p>
       </Modal>
 
       <Modal
@@ -201,8 +241,17 @@ const AdminDashboard = () => {
           defaultValues={userToEdit}
           onSubmit={handleEditUser}
           theme={theme}
+          currentUserRoles={currentUserRoles}
         />
       </Modal>
+
+      {showTaskModal && (
+        <TaskManagerModal
+          user={taskUser}
+          onClose={closeTaskModal}
+          theme={theme}
+        />
+      )}
     </>
   );
 };
