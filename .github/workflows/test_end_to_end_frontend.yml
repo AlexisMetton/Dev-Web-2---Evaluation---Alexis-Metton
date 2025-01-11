@@ -1,0 +1,70 @@
+name: E2E Tests frontend
+
+on:
+  push: ~
+  pull_request:
+    branches:
+      - develop
+      - main
+  workflow_dispatch: ~
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.DATABASE }}
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: |
+          echo HOST=${{ secrets.HOST }}
+          npm i
+
+      - name: Start Server
+        working-directory: ./src
+        run: npm start &
+        env:
+          HOST: ${{ secrets.HOST }}
+          DATABASE: ${{ secrets.DATABASE }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          PORT: ${{ secrets.PORT }}
+          SECRET: ${{ secrets.SECRET }}
+          USER: ${{ secrets.USER }}
+
+      - name: Wait for Server
+        run: |
+          echo "Waiting for server to start..."
+          until curl -s http://localhost:3001 > /dev/null; do
+            echo "Server is not ready yet. Retrying..."
+            sleep 5
+          done
+          echo "Server is ready!"
+
+      - name: Run Cypress tests
+        run: npm run test:e2e
+        working-directory: ./frontend
+        env:
+          CYPRESS_DB_HOST: ${{ secrets.HOST }}
+          CYPRESS_DB_USER: ${{ secrets.USER }}
+          CYPRESS_DB_PASSWORD: ${{ secrets.PASSWORD }}
+          CYPRESS_DB_NAME: ${{ secrets.DATABASE }}
