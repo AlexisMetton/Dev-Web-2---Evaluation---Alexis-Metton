@@ -38,8 +38,14 @@ jobs:
           echo HOST=${{ secrets.HOST }}
           npm i
 
+      - name: Install dependencies
+        working-directory: ./backend
+        run: |
+          echo HOST=${{ secrets.HOST }}
+          npm i
+
       - name: Start Server
-        working-directory: ./src
+        working-directory: ./backend
         run: npm start &
         env:
           HOST: ${{ secrets.HOST }}
@@ -59,6 +65,10 @@ jobs:
             sleep 5
           done
           echo "Server is ready!"
+
+      - name: Start Server
+        working-directory: ./frontend
+        run: npm run dev
 
       - name: Run Cypress tests
         run: npm run test:e2e
