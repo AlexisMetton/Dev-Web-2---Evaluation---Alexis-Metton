@@ -1,0 +1,39 @@
+name: Test application frontend
+
+on: 
+  push: ~
+  pull_request:
+    branches:
+      - develop
+      - main
+  workflow_dispatch: ~
+
+jobs: 
+  runTest:
+    name: execute test
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+            ref: ${{ github.sha }}
+
+      - name: Install deps
+        working-directory: ./frontend
+        run: |
+          echo HOST=${{ secrets.HOST }}
+          npm i
+          
+        env: 
+          HOST: ${{ secrets.HOST }}
+          DATABASE: ${{ secrets.DATABASE }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          PORT: ${{ secrets.PORT }}
+          SECRET: ${{ secrets.SECRET }}
+          USER: ${{ secrets.USER }}
+
+      - name: Run frontend tests
+        run: npm test
+        working-directory: ./frontend

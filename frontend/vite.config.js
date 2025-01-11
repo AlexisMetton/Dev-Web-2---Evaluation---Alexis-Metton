@@ -9,4 +9,9 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  test: {
+    globals: true,
+    environment: 'jsdom', // Simule un environnement DOM pour les tests
+    setupFiles: './src/test/setup.js', // (optionnel) Fichier de configuration pour les tests
+  },
 })
